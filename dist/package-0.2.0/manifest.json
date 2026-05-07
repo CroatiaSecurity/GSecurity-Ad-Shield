@@ -1,0 +1,125 @@
+<<<<<<< HEAD
+﻿{
+    "manifest_version":  3,
+    "name":  "GSecurity Ad Shield",
+    "version":  "0.2.0",
+    "description":  "YouTube-focused and generic ad suppression via main-world and content script hooks.",
+    "minimum_chrome_version":  "114",
+    "permissions":  [
+                        "scripting",
+                        "declarativeNetRequest"
+                    ],
+    "host_permissions":  [
+                             "*://*.youtube.com/*",
+                             "\u003call_urls\u003e"
+                         ],
+    "declarative_net_request":  {
+                                    "rule_resources":  [
+                                                           {
+                                                               "id":  "ruleset_1",
+                                                               "enabled":  true,
+                                                               "path":  "rules.json"
+                                                           }
+                                                       ]
+                                },
+    "background":  {
+                       "service_worker":  "background.js"
+                   },
+    "content_scripts":  [
+                            {
+                                "matches":  [
+                                                "*://*.youtube.com/*"
+                                            ],
+                                "js":  [
+                                           "content.js"
+                                       ],
+                                "run_at":  "document_start"
+                            }
+                        ],
+    "web_accessible_resources":  [
+                                     {
+                                         "resources":  [
+                                                           "main-world.js"
+                                                       ],
+                                         "matches":  [
+                                                         "*://*.youtube.com/*"
+                                                     ]
+                                     }
+                                 ],
+    "action":  {
+                   "default_title":  "GSecurity Ad Shield",
+                   "default_icon":  {
+                                        "16":  "icons/icon16.png",
+                                        "32":  "icons/icon32.png"
+                                    }
+               },
+    "icons":  {
+                  "16":  "icons/icon16.png",
+                  "32":  "icons/icon32.png",
+                  "48":  "icons/icon48.png",
+                  "128":  "icons/icon128.png"
+              }
+}
+=======
+﻿{
+    "manifest_version":  3,
+    "name":  "GSecurity Ad Shield",
+    "version":  "0.2.0",
+    "description":  "YouTube-focused and generic ad suppression via main-world and content script hooks.",
+    "minimum_chrome_version":  "114",
+    "permissions":  [
+                        "scripting",
+                        "declarativeNetRequest"
+                    ],
+    "host_permissions":  [
+                             "*://*.youtube.com/*",
+                             "\u003call_urls\u003e"
+                         ],
+    "declarative_net_request":  {
+                                    "rule_resources":  [
+                                                           {
+                                                               "id":  "ruleset_1",
+                                                               "enabled":  true,
+                                                               "path":  "rules.json"
+                                                           }
+                                                       ]
+                                },
+    "background":  {
+                       "service_worker":  "background.js"
+                   },
+    "content_scripts":  [
+                            {
+                                "matches":  [
+                                                "*://*.youtube.com/*"
+                                            ],
+                                "js":  [
+                                           "content.js"
+                                       ],
+                                "run_at":  "document_start"
+                            }
+                        ],
+    "web_accessible_resources":  [
+                                     {
+                                         "resources":  [
+                                                           "main-world.js"
+                                                       ],
+                                         "matches":  [
+                                                         "*://*.youtube.com/*"
+                                                     ]
+                                     }
+                                 ],
+    "action":  {
+                   "default_title":  "GSecurity Ad Shield",
+                   "default_icon":  {
+                                        "16":  "icons/icon16.png",
+                                        "32":  "icons/icon32.png"
+                                    }
+               },
+    "icons":  {
+                  "16":  "icons/icon16.png",
+                  "32":  "icons/icon32.png",
+                  "48":  "icons/icon48.png",
+                  "128":  "icons/icon128.png"
+              }
+}
+>>>>>>> b06f6c1e04c411cefe1541a263842cb1ee55fa58
