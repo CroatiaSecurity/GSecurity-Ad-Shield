@@ -1,15 +1,6 @@
-<<<<<<< HEAD
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
   <app appid="aieoongdipffplahanomgmlekikhcoin">
     <updatecheck codebase="https://github.com/srackalica/GSecurity-Ad-Shield/releases/download/v0.2.0/gsecurity-ad-shield-0.2.0.crx" version="0.2.0" />
   </app>
 </gupdate>
-=======
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
-  <app appid="aieoongdipffplahanomgmlekikhcoin">
-    <updatecheck codebase="https://github.com/srackalica/GSecurity-Ad-Shield/releases/download/v0.2.0/gsecurity-ad-shield-0.2.0.crx" version="0.2.0" />
-  </app>
-</gupdate>
->>>>>>> b06f6c1e04c411cefe1541a263842cb1ee55fa58
