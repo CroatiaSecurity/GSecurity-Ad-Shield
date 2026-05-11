@@ -11,6 +11,13 @@
     location.hostname.includes("youtube.com") ||
     location.hostname.includes("youtube-nocookie.com");
 
+  const isDiscord =
+    location.hostname.includes("discord.com") ||
+    location.hostname.includes("discordapp.com");
+
+  /* Discord uses class names and URLs that trigger false positives — skip entirely */
+  if (isDiscord) return;
+
   /* ── Blocked ad/tracking domains ── */
   const blockedDomainFragments = [
     "doubleclick.net",

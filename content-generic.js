@@ -13,7 +13,9 @@
     "yahoo.com",
     "aliexpress.com",
     "wolt.com",
-    "woltapp.com"
+    "woltapp.com",
+    "discord.com",
+    "discordapp.com"
   ];
 
   const isWhitelistedHost = (h) => {
