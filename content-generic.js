@@ -38,6 +38,17 @@
   };
 
   const GENERIC_AD_SELECTORS = [
+    /* ── Cosmetic filter: common ad-box class names ── */
+    ".adsbox",
+    ".adbox",
+    ".ad-box",
+    ".adbox-wrapper",
+    ".banner_ads",
+    ".textads",
+    ".adSocial",
+    ".ADBox",
+    ".AdBox",
+
     /* ── Core Google / programmatic ad selectors ── */
     "ins.adsbygoogle",
     'iframe[src*="doubleclick"]',
@@ -139,7 +150,12 @@
   const scrubGenericAds = () => {
     for (const sel of GENERIC_AD_SELECTORS) {
       document.querySelectorAll(sel).forEach((el) => {
-        if (el && el.parentElement) el.remove();
+        if (!el || !el.parentElement) return;
+        /* Hide instead of remove to avoid breaking page scripts that reference these elements */
+        if (!el.getAttribute("data-gsec-hidden")) {
+          el.setAttribute("data-gsec-hidden", "1");
+          el.style.cssText = "display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;padding:0!important;margin:0!important;border:0!important;";
+        }
       });
     }
   };

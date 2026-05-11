@@ -270,5 +270,18 @@
   {"id": 269, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||globalapi.ad.xiaomi.com"}},
   {"id": 270, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||tracking.miui.com"}},
   {"id": 271, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||tracking.intl.miui.com"}},
-  {"id": 272, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||rereddit.com"}}
+  {"id": 272, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||rereddit.com"}},
+
+  {"id": 273, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/ads.js", "resourceTypes": ["script"]}},
+  {"id": 274, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/pagead.js", "resourceTypes": ["script"]}},
+  {"id": 275, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/pagead/", "resourceTypes": ["script", "xmlhttprequest", "image", "sub_frame"]}},
+  {"id": 276, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/widget/ads.js", "resourceTypes": ["script"]}},
+  {"id": 277, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/partner.ads.js", "resourceTypes": ["script"]}},
+  {"id": 278, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/adsbygoogle.js", "resourceTypes": ["script"]}},
+  {"id": 279, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/show_ads.js", "resourceTypes": ["script"]}},
+  {"id": 280, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "/ad.js", "resourceTypes": ["script"]}},
+  {"id": 281, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||app-measurement.com"}},
+  {"id": 282, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||advertising.yandex.ru"}},
+  {"id": 283, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||advertising.apple.com"}},
+  {"id": 284, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||tr.iadsdk.apple.com"}}
 ]

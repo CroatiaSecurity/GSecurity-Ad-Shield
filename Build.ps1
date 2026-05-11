@@ -55,7 +55,7 @@ if (Test-Path $tmpPackageDir) {
 }
 New-Item -ItemType Directory -Path $tmpPackageDir | Out-Null
 
-$include = @("manifest.json", "background.js", "content.js", "content-sites.js", "content-generic.js", "main-world.js", "rules.json", "icons")
+$include = @("manifest.json", "background.js", "content.js", "content-sites.js", "content-generic.js", "content-cosmetic.js", "main-world.js", "rules.json", "icons")
 foreach ($entry in $include) {
     $source = Join-Path $projectRoot $entry
     if (Test-Path $source) {
