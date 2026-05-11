@@ -1,6 +1,6 @@
 param(
-    [string]$Version = "0.2.0",
-    [string]$RepoOwner = "srackalica",
+    [string]$Version = "0.3.0",
+    [string]$RepoOwner = "CroatiaSecurity",
     [string]$RepoName = "GSecurity-Ad-Shield",
     [string]$ExtensionId = "",
     [string]$KeyPath = ".\keys\gsecurity-ad-shield.pem",
@@ -33,7 +33,8 @@ if (-not (Test-Path $manifestPath)) {
 
 $manifest = Get-Content -Raw $manifestPath | ConvertFrom-Json
 $manifest.version = $Version
-($manifest | ConvertTo-Json -Depth 50) | Set-Content -Encoding utf8 $manifestPath
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($manifestPath, ($manifest | ConvertTo-Json -Depth 50), $utf8NoBom)
 
 if (-not (Test-Path $distDir)) {
     New-Item -ItemType Directory -Path $distDir | Out-Null
