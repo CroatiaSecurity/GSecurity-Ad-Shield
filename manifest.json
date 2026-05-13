@@ -1,7 +1,7 @@
 {
     "manifest_version":  3,
     "name":  "GSecurity Ad Shield",
-    "version":  "0.4.0",
+    "version":  "0.5.0",
     "description":  "Block ads and trackers across YouTube, Reddit, Facebook, Twitter/X, search engines, and 200+ ad networks.",
     "minimum_chrome_version":  "114",
     "permissions":  [

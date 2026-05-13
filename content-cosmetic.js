@@ -42,12 +42,11 @@
     ".ad-zone",
     ".ad-space",
     "ins.adsbygoogle",
-    '[id*="google_ads"]',
-    '[class*="ad-slot"]',
-    '[class*="ad-banner"]',
-    '[class*="ad-container"]',
-    '[class*="ad-wrapper"]',
-    '[data-ad]',
+    '[id^="google_ads"]',
+    '[class^="ad-slot"]',
+    '[class^="ad-banner"]',
+    '[class^="ad-container"]',
+    '[class^="ad-wrapper"]',
     '[data-adunit]',
     '[data-ad-slot]',
     ".sponsored-content",
@@ -70,14 +69,14 @@
     ".ad-modal"
   ];
 
-  const hideRule = "{ display: none !important; visibility: hidden !important; height: 0 !important; max-height: 0 !important; min-height: 0 !important; overflow: hidden !important; padding: 0 !important; margin: 0 !important; border: 0 !important; font-size: 0 !important; line-height: 0 !important; }";
+  const hideRule = ":not([data-gsec-bait]) { display: none !important; visibility: hidden !important; height: 0 !important; max-height: 0 !important; min-height: 0 !important; overflow: hidden !important; padding: 0 !important; margin: 0 !important; border: 0 !important; font-size: 0 !important; line-height: 0 !important; }";
 
   /* Strategy 1: Inject <style> element into page */
   const injectStyle = () => {
     if (document.getElementById("gsec-cosmetic-early")) return;
     const style = document.createElement("style");
     style.id = "gsec-cosmetic-early";
-    style.textContent = COSMETIC_SELECTORS.map((s) => s + " " + hideRule).join("\n");
+    style.textContent = COSMETIC_SELECTORS.map((s) => s + hideRule).join("\n");
     (document.head || document.documentElement).appendChild(style);
   };
 
@@ -104,6 +103,7 @@
       try {
         document.querySelectorAll(sel).forEach((el) => {
           if (el.getAttribute("data-gsec-hidden")) return;
+          if (el.getAttribute("data-gsec-bait")) return;
           el.setAttribute("data-gsec-hidden", "1");
           el.style.cssText = "display:none!important;height:0!important;max-height:0!important;min-height:0!important;overflow:hidden!important;visibility:hidden!important;padding:0!important;margin:0!important;border:0!important;opacity:0!important;pointer-events:none!important;position:absolute!important;";
         });

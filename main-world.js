@@ -90,54 +90,70 @@
     "/api/stats/atr",
     "/pagead/",
     "/ptracking",
-    "/ad?",
-    "/ads?",
     "/advert",
-    "/sponsored",
-    "/promotion",
-    "/tracking",
-    "/analytics",
-    "/collect?",
-    "/beacon",
-    "/pixel",
-    "/imp?",
-    "/impression",
-    "/click?",
-    "ad_banner",
-    "ad_frame",
-    "sponsored_content",
-    "promo_banner",
-    /* ── Additional URL path patterns ── */
+    "/sponsored_content",
+    "/promo_banner",
     "/ad_banner",
     "/ad_frame",
     "/ads/banner"
   ];
 
   const blockedUrlRegex =
-    /(\/ads?\/|\/ad[sx]?\b|[?&](ad|ads|adunit|adformat|adtag)=|doubleclick|googlesyndication|googleadservices|taboola|outbrain|tracking|beacon|pixel)/i;
+    /(\/ads?\/(?:banner|frame|popup|interstitial)|[?&](adunit|adformat|adtag)=|doubleclick|googlesyndication|googleadservices|taboola|outbrain)/i;
 
   /* ── PAC-derived regex patterns for comprehensive blocking ── */
 
-  // Catches any hostname containing ad-related words (from BlockAds.pac adDomainRegex)
-  const adDomainRegex = /^(?:.*[-_.])?(?:ads?|adv(?:ert(?:s|ising)?)?|banners?|track(?:er|ing|s)?|beacons?|doubleclick|adservice|adnxs|adtech|googleads|gads|adwords|partner|sponsor(?:ed)?|click(?:s|bank|tale|through)?|pop(?:up|under)s?|promo(?:tion)?|market(?:ing|er)?|affiliates?|metrics?|stat(?:s|counter|istics)?|analytics?|pixels?|campaign|traff(?:ic|iq)|monetize|syndicat(?:e|ion)|revenue|yield|impress(?:ion)?s?|conver(?:sion|t)?|audience|target(?:ing)?|behavior|profil(?:e|ing)|telemetry|survey|outbrain|taboola|quantcast|scorecard|omniture|comscore|krux|bluekai|exelate|adform|adroll|rubicon|vungle|inmobi|flurry|mixpanel|heap|amplitude|optimizely|bizible|pardot|hubspot|marketo|eloqua|media(?:math|net)|criteo|appnexus|turn|adbrite|admob|adsonar|adscale|zergnet|revcontent|mgid|nativeads|contentad|displayads|bannerflow|adblade|adcolony|chartbeat|newrelic|pingdom|kissmetrics|tradedesk|bidder|auction|rtb|programmatic|interstitial|overlay|trafficjunky|trafficstars|exoclick|juicyads|realsrv|magsrv)\./i;
+  // Catches hostnames that ARE known ad/tracking domains (tightened to avoid false positives)
+  // Only matches when the ad-related word is the registrable domain itself, not a substring
+  const adDomainRegex = /(?:^|\.)(doubleclick|adservice|adnxs|adtech|googleads|adwords|outbrain|taboola|quantcast|scorecard|omniture|comscore|krux|bluekai|exelate|adform|adroll|rubicon|vungle|inmobi|flurry|mixpanel|amplitude|optimizely|bizible|pardot|hubspot|marketo|eloqua|mediamath|criteo|appnexus|adbrite|admob|adsonar|adscale|zergnet|revcontent|mgid|nativeads|contentad|displayads|bannerflow|adblade|adcolony|chartbeat|newrelic|pingdom|kissmetrics|tradedesk|bidswitch|trafficjunky|trafficstars|exoclick|juicyads|realsrv|magsrv)\./i;
 
-  // Catches numbered ad subdomains like ad1., banner2., click3. (from BlockAds.pac adSubdomainRegex)
-  const adSubdomainRegex = /^(?:adcreative(?:s)?|imageserv|media(?:mgr)?|stats|switch|track(?:2|er)?|view|ads?\d{0,3}|banners?\d{0,3}|clicks?\d{0,3}|count(?:er)?\d{0,3}|servedby\d{0,3}|toolbar\d{0,3}|pageads\d{0,3}|pops\d{0,3}|promos?\d{0,3})\./i;
+  // Catches numbered ad subdomains like ad1., banner2., servedby3. (from BlockAds.pac adSubdomainRegex)
+  // Tightened: only match when followed by a known ad domain pattern, not arbitrary domains
+  const adSubdomainRegex = /^(?:adcreative(?:s)?|adserv(?:er|e|ing)?|servedby\d{0,3}|pageads?\d{0,3}|ads?\d{1,3}|banners?\d{1,3})\./i;
 
   // Catches tracking pixels and Flash ads (from BlockAds.pac adWebBugRegex)
   const adWebBugRegex = /(?:\/(?:1|blank|b|clear|pixel|transp|spacer)\.gif|\.swf)$/i;
 
-  // Extended URL path patterns (from BlockAds.pac adUrlRegex)
-  const adUrlPathRegex = /(?:\/(?:adcontent|img\/adv|web-ad|iframead|contentad|ad\/image|video-ad|stats\/event|xtclicks|adscript|bannerad|googlead|adhandler|adimages|adconfig|tracking\/track|tracker\/track|adrequest|nativead|adman|advertisement|adframe|adcontrol|adoverlay|adserver|adsense|google-ads|ad-banner|banner-ad|adplacement|adblockdetect|advertising|admanagement|adprovider|adrotation|adunit|adcall|adlog|adcount|adserve|adsrv|adsys|adtrack|adview|adwidget|adzone|sidebar-ads|footer-ads|top-ads|bottom-ads|ads\.php|ad\.js|ad\.css))/i;
+  // Extended URL path patterns — only match clearly ad-specific paths
+  const adUrlPathRegex = /(?:\/(?:adcontent|adhandler|adimages|adconfig|adrequest|adman|adframe|adcontrol|adoverlay|adserver|adsense|google-ads|ad-banner|banner-ad|adplacement|adblockdetect|admanagement|adprovider|adrotation|adunit|adcall|adlog|adcount|adserve|adsrv|adsys|adtrack|adview|adwidget|adzone|sidebar-ads|footer-ads|top-ads|bottom-ads|ads\.php))/i;
+
+  /* ── Helper: extract registrable domain (eTLD+1 approximation) ── */
+  const getBaseDomain = (hostname) => {
+    const parts = hostname.split(".");
+    if (parts.length <= 2) return hostname;
+    return parts.slice(-2).join(".");
+  };
+
+  const pageDomain = getBaseDomain(location.hostname.toLowerCase());
+
+  const isFirstParty = (rawUrl) => {
+    try {
+      const urlHost = new URL(rawUrl, location.href).hostname.toLowerCase();
+      return getBaseDomain(urlHost) === pageDomain;
+    } catch (_) {
+      return true; // relative URLs are first-party
+    }
+  };
 
   const shouldBlockUrl = (rawUrl) => {
     if (typeof rawUrl !== "string" || !rawUrl) return false;
+
+    // Never block first-party requests — these are the site talking to itself
+    if (isFirstParty(rawUrl)) return false;
+
     const url = rawUrl.toLowerCase();
 
-    // Quick domain fragment check
+    // Quick domain fragment check (known ad/tracking domains)
     if (blockedDomainFragments.some((d) => url.includes(d))) return true;
 
-    // Quick path pattern check
+    // Hostname-based regex checks
+    try {
+      const hostname = new URL(rawUrl, location.href).hostname;
+      if (adDomainRegex.test(hostname)) return true;
+      if (adSubdomainRegex.test(hostname)) return true;
+    } catch (_) {}
+
+    // Quick path pattern check — only for third-party requests
     if (blockedPatterns.some((p) => url.includes(p))) return true;
 
     // URL path regex
@@ -146,13 +162,6 @@
 
     // Web bug / tracking pixel check
     if (adWebBugRegex.test(url)) return true;
-
-    // Hostname-based regex checks
-    try {
-      const hostname = new URL(rawUrl).hostname;
-      if (adDomainRegex.test(hostname)) return true;
-      if (adSubdomainRegex.test(hostname)) return true;
-    } catch (_) {}
 
     return false;
   };
