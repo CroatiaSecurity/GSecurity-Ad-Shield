@@ -9,6 +9,7 @@ This is a **Chrome extension** that:
 - 🛡️ Shields against malicious websites and phishing attempts  
 
 ## 🚀 Features  
+- 🚫 Dedicated support for YouTube, Reddit, Facebook, Twitter/X, Twitch, TikTok, and TeamOS
 - 📈 Real-time ad detection with AI algorithms  
 - 🧠 Smart filtering engine that adapts to your habits  
 - 📦 Lightweight architecture (0.5MB) for fast performance  

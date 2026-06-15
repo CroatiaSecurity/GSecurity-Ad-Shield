@@ -82,7 +82,13 @@
     "byteoversea.com",
     "yahooinc.com",
     "appmetrica.yandex.com",
-    "yandexadexchange.net"
+    "yandexadexchange.net",
+    "pipaffiliates.com",
+    "litebeach.com",
+    "zoologyfibre.com",
+    "realizationnewestfangs.com",
+    "spendsdetachment.com",
+    "kettledroopingcontinuation.com"
   ];
 
   const blockedPatterns = [

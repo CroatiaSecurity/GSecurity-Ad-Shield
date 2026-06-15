@@ -219,6 +219,31 @@
   };
 
   /* ====================================================================
+   *  TEAMOS
+   * ==================================================================== */
+  const scrubTeamOS = () => {
+    // 1. Remove top banner ads
+    const bannerSels = [
+      'a[id^="atLink-"]',
+      'a[href*="clicks.pipaffiliates.com"]',
+      'a[href*="litebeach.com"]'
+    ];
+    for (const sel of bannerSels) {
+      document.querySelectorAll(sel).forEach((el) => el.remove());
+    }
+
+    // 2. Remove invisible onclick/popunder overlays
+    const popunderSels = [
+      'a[href*="sub3=invoke_layer"]',
+      'a[href*="key=a1e8916f3df739635783bc00fa07bfe6"]',
+      'a[href*="/z3i66sdp?"]'
+    ];
+    for (const sel of popunderSels) {
+      document.querySelectorAll(sel).forEach((el) => el.remove());
+    }
+  };
+
+  /* ====================================================================
    *  NEWS / CONTENT SITES (generic patterns)
    * ==================================================================== */
   const scrubNewsSites = () => {
@@ -269,6 +294,8 @@
       scrubTwitch();
     } else if (host.includes("tiktok.com")) {
       scrubTikTok();
+    } else if (host.includes("teamos.xyz")) {
+      scrubTeamOS();
     }
     // Always run generic news/content cleanup
     scrubNewsSites();

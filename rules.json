@@ -350,5 +350,11 @@
   {"id": 349, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||app-measurement.com"}},
   {"id": 350, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||advertising.yandex.ru"}},
   {"id": 351, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||advertising.apple.com"}},
-  {"id": 352, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||tr.iadsdk.apple.com"}}
+  {"id": 352, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||tr.iadsdk.apple.com"}},
+  {"id": 353, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||pipaffiliates.com"}},
+  {"id": 354, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||litebeach.com"}},
+  {"id": 355, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||zoologyfibre.com"}},
+  {"id": 356, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||realizationnewestfangs.com"}},
+  {"id": 357, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||spendsdetachment.com"}},
+  {"id": 358, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||kettledroopingcontinuation.com"}}
 ]

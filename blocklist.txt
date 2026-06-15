@@ -1,4 +1,4 @@
-﻿2mdn.net
+2mdn.net
 2o7.net
 33across.com
 a.mouseflow.com
@@ -184,9 +184,11 @@ iot-eu-logser.realme.com
 iot-logser.realme.com
 juicyads.com
 kiks.yandex.ru
+kettledroopingcontinuation.com
 kissmetrics.com
 krux.com
 lijit.com
+litebeach.com
 liveintent.com
 log.byteoversea.com
 log.fc.yahoo.com
@@ -242,6 +244,7 @@ partner.googleadservices.com
 partnerads.ysm.yahoo.com
 pclick.yahoo.com
 pingdom.net
+pipaffiliates.com
 pixel.facebook.com
 pixel.reddit.com
 pubads.g.doubleclick.net
@@ -249,6 +252,7 @@ pubmatic.com
 pushwoosh.com
 quantcast.com
 quantserve.com
+realizationnewestfangs.com
 realsrv.com
 realtime.luckyorange.com
 rereddit.com
@@ -279,6 +283,7 @@ sitescout.com
 smartadserver.com
 smetrics.samsung.com
 sovrn.com
+spendsdetachment.com
 spotxchange.com
 springserve.com
 ssl.google-analytics.com
@@ -336,4 +341,5 @@ youtube.cleverads.vn
 youtubeads.googleapis.com
 zemanta.com
 zergnet.com
+zoologyfibre.com
 zqtk.net

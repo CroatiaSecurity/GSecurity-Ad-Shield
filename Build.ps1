@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "0.6.0",
+    [string]$Version = "0.7.0",
     [string]$RepoOwner = "CroatiaSecurity",
     [string]$RepoName = "GSecurity-Ad-Shield",
     [string]$ExtensionId = "",
