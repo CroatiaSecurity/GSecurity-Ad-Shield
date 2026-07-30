@@ -15,7 +15,10 @@
     "wolt.com",
     "woltapp.com",
     "discord.com",
-    "discordapp.com"
+    "discordapp.com",
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be"
   ];
 
   const isWhitelistedHost = (h) => {
