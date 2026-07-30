@@ -21,7 +21,7 @@
     }
   };
 
-  /* ── CSS: collapse known ad renderers only (never layout shells) ── */
+  /* ── CSS: collapse known ad renderers ── */
   const injectCollapseCss = () => {
     if (document.getElementById("gsec-yt-css")) return;
     const style = document.createElement("style");
@@ -98,101 +98,79 @@
     "ytd-movie-offer-module-renderer"
   ];
 
-  // ONLY real skip controls — never button[class*="skip"] (matches UI chrome).
   const SKIP_BTN_SELECTORS = [
     ".ytp-ad-skip-button",
     ".ytp-skip-ad-button",
     ".ytp-ad-skip-button-modern",
     ".ytp-skip-ad-button__text",
-    ".ytp-ad-overlay-close-button",
-    "button.ytp-ad-skip-button-modern",
-    "button.ytp-ad-skip-button"
+    'button[class*="skip"]',
+    ".ytp-ad-overlay-close-button"
   ];
-
-  let scrubScheduled = false;
-  let lastShellScrub = 0;
 
   const scrubYouTubeAds = () => {
     // 1. Remove ad DOM elements
     for (const sel of AD_SELECTORS) {
-      try {
-        document.querySelectorAll(sel).forEach((el) => el.remove());
-      } catch (_) {}
+      document.querySelectorAll(sel).forEach((el) => el.remove());
     }
 
     // 2. Click any skip buttons
     for (const sel of SKIP_BTN_SELECTORS) {
-      try {
-        document.querySelectorAll(sel).forEach((btn) => {
-          if (btn.click) btn.click();
-        });
-      } catch (_) {}
+      document.querySelectorAll(sel).forEach((btn) => {
+        if (btn.click) btn.click();
+      });
     }
 
-    // 3. Fast-forward video ads that are currently playing (player must be in ad mode)
-    const player = document.querySelector(".html5-video-player.ad-showing");
-    const video = player ? player.querySelector("video.html5-main-video, video") : null;
-    if (player && video) {
-      try {
-        if (Number.isFinite(video.duration) && video.duration > 0 && video.duration < 120) {
-          // Cap duration check — real videos are long; ads are short
-          video.currentTime = Math.max(0, video.duration - 0.1);
-        }
-        video.muted = true;
-        video.playbackRate = 16;
-        video.play().catch(() => {});
-      } catch (_) {}
+    // 3. Fast-forward video ads that are currently playing
+    const player = document.querySelector(".html5-video-player");
+    const video = document.querySelector("video");
+    if (player && player.classList.contains("ad-showing") && video) {
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = Math.max(0, video.duration - 0.1);
+      }
+      video.muted = true;
+      video.playbackRate = 16;
+      video.play().catch(() => {});
+      player.classList.remove("ad-showing");
     }
 
-    // 4. Empty feed shells — home/search grid only, throttled (not every mutation).
-    // Never touch watch-page sidebar (ytd-compact-video-renderer / secondary results).
-    const now = Date.now();
-    if (now - lastShellScrub > 1500) {
-      lastShellScrub = now;
-      try {
-        document.querySelectorAll("ytd-rich-item-renderer").forEach((el) => {
-          const hasAdMarker = !!el.querySelector(
-            "ytd-ad-slot-renderer, ytd-display-ad-renderer, ytd-promoted-video-renderer, ytd-promoted-sparkles-web-renderer"
-          );
-          if (hasAdMarker) {
-            el.remove();
-            return;
-          }
-          // Only remove clearly empty shells — partial lazy-load must not be destroyed
-          // (that was nuking feed cells mid-scroll when thumbnails had not painted yet).
-          const hasTitle = !!el.querySelector(
-            "a#video-title-link, a#video-title[href], #video-title.ytd-rich-grid-media"
-          );
-          const hasThumbImage = !!el.querySelector(
-            "ytd-thumbnail img[src], ytd-thumbnail yt-image img[src], img.yt-core-image[src]"
-          );
-          if (!hasTitle && !hasThumbImage) {
-            const compactText = (el.textContent || "").replace(/\s+/g, "");
-            if (compactText.length === 0) el.remove();
-          }
-        });
-      } catch (_) {}
-    }
+    // 4. Remove residual empty feed shells (ad placeholders)
+    document.querySelectorAll("ytd-rich-item-renderer").forEach((el) => {
+      const hasAdMarker = !!el.querySelector(
+        "ytd-ad-slot-renderer, ytd-display-ad-renderer, ytd-promoted-video-renderer, ytd-promoted-sparkles-web-renderer"
+      );
+      if (hasAdMarker) {
+        el.remove();
+        return;
+      }
+      const hasTitle = !!el.querySelector(
+        "a#video-title-link, a#video-title[href], #video-title.ytd-rich-grid-media"
+      );
+      const hasThumbImage = !!el.querySelector(
+        "ytd-thumbnail img[src], ytd-thumbnail yt-image img[src], img.yt-core-image[src]"
+      );
+      if (!hasTitle && !hasThumbImage) {
+        const compactText = (el.textContent || "").replace(/\s+/g, "");
+        if (compactText.length === 0) el.remove();
+      }
+      // Remove thumbnail shells with no real content
+      const hasThumbnailShell = !!el.querySelector("ytd-thumbnail, a#thumbnail");
+      if (hasThumbnailShell && !hasThumbImage) {
+        const hasDuration = !!el.querySelector(
+          "#text.ytd-thumbnail-overlay-time-status-renderer"
+        );
+        const hasMenu = !!el.querySelector("ytd-menu-renderer");
+        if (!hasDuration && !hasTitle && !hasMenu) el.remove();
+      }
+    });
 
     // 5. Dismiss "ad blockers are not allowed" popups
-    try {
-      document.querySelectorAll("tp-yt-paper-dialog").forEach((dialog) => {
-        const text = (dialog.textContent || "").toLowerCase();
-        if (text.includes("ad blocker") || text.includes("allow ads")) {
-          const dismiss = dialog.querySelector("#dismiss-button, .dismiss-button, button");
-          if (dismiss && dismiss.click) dismiss.click();
-          dialog.remove();
-        }
-      });
-    } catch (_) {}
-  };
-
-  const scheduleScrub = () => {
-    if (scrubScheduled) return;
-    scrubScheduled = true;
-    requestAnimationFrame(() => {
-      scrubScheduled = false;
-      scrubYouTubeAds();
+    document.querySelectorAll("tp-yt-paper-dialog").forEach((dialog) => {
+      const text = (dialog.textContent || "").toLowerCase();
+      if (text.includes("ad blocker") || text.includes("allow ads")) {
+        const dismiss = dialog.querySelector("#dismiss-button, .dismiss-button, button");
+        if (dismiss && dismiss.click) dismiss.click();
+        dialog.remove();
+      }
     });
   };
 
@@ -201,9 +179,8 @@
   injectCollapseCss();
   scrubYouTubeAds();
 
-  // Interval is enough for ads; do not re-scan the full tree on every mutation.
-  setInterval(scrubYouTubeAds, 1000);
+  setInterval(scrubYouTubeAds, 250);
 
-  const observer = new MutationObserver(scheduleScrub);
+  const observer = new MutationObserver(scrubYouTubeAds);
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
