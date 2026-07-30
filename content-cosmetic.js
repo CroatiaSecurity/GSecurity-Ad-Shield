@@ -15,7 +15,12 @@
     "wolt.com",
     "woltapp.com",
     "discord.com",
-    "discordapp.com"
+    "discordapp.com",
+    // YouTube has a dedicated content.js — generic cosmetic classes like
+    // .promoted / .ad-container / .ad-overlay false-positive on player UI.
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be"
   ];
 
   const isWhitelistedHost = (h) => {

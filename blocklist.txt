@@ -1,4 +1,4 @@
-2mdn.net
+﻿2mdn.net
 2o7.net
 33across.com
 a.mouseflow.com
@@ -356,8 +356,6 @@ ad-apac.doubleclick.net
 dart.l.doubleclick.net
 ad-g.doubleclick.net
 ade.googlesyndication.com
-yt3.ggpht.com
-ggpht.com
 s3.buysellads.com
 stats.buysellads.com
 cdn.buysellads.com
