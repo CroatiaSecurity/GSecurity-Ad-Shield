@@ -32,7 +32,7 @@ This is a **Chrome extension** that:
 6. Extension will now appear in your Chrome toolbar  
 
 ### 🌐 Chrome Web Store (Production Version)  
-[🔗 Get it on Chrome Web Store](https://chromewebstore.google.com/detail/gsecurity-ad-shield/hhpmmmfnjckeffhaafpjmioogcbclbof))  
+[🔗 Get it on Chrome Web Store](https://chromewebstore.google.com/detail/gsecurity-ad-shield/hhpmmmfnjckeffhaafpjmioogcbclbof)  
 
 ## 🚀 Usage  
 1. Click the shield icon in your Chrome toolbar  
