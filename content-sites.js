@@ -220,13 +220,85 @@
 
   /* ====================================================================
    *  TEAMOS
+   * Ad stack is mostly third-party (instrumenttactics / highperformanceformat
+   * style networks), not domains from a typical hosts file.
    * ==================================================================== */
+  const TEAMOS_AD_HOST_FRAGMENTS = [
+    "instrumenttactics.com",
+    "highperformanceformat.com",
+    "highcpmgate.com",
+    "onclickads.net",
+    "onclicka.com",
+    "pipaffiliates.com",
+    "litebeach.com",
+    "kettledroopingcontinuation.com",
+    "realizationnewestfangs.com",
+    "spendsdetachment.com",
+    "zoologyfibre.com",
+    "protrafficinspector.com",
+    "portalfluently.com",
+    "mamshirt.com",
+    "cloudvideosa.com",
+    "consumeririssalary.com",
+    "fizzyacerbitymellow.com",
+    "popads.net",
+    "clksite.com",
+    "adsterra.com",
+    "hilltopads.net",
+    "clickadu.com",
+    "propellerads.com",
+    "exoclick.com",
+    "juicyads.com",
+    "tsyndicate.com",
+    "adtng.com"
+  ];
+
+  const teamOsUrlLooksLikeAd = (url) => {
+    const u = String(url || "").toLowerCase();
+    if (!u) return false;
+    return TEAMOS_AD_HOST_FRAGMENTS.some((d) => u.includes(d));
+  };
+
+  const injectTeamOsCss = () => {
+    if (document.getElementById("gsec-teamos-css")) return;
+    const style = document.createElement("style");
+    style.id = "gsec-teamos-css";
+    style.textContent = `
+      a[id^="atLink-"],
+      iframe[src*="instrumenttactics"],
+      iframe[src*="highperformanceformat"],
+      iframe[id*="google_ads"],
+      iframe[id*="aswift"],
+      div[id^="container-"] > iframe,
+      .adsbygoogle,
+      ins.adsbygoogle,
+      [data-ad-client],
+      [data-ad-slot],
+      a[href*="pipaffiliates.com"],
+      a[href*="litebeach.com"],
+      a[href*="sub3=invoke_layer"],
+      a[href*="instrumenttactics"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  };
+
   const scrubTeamOS = () => {
-    // 1. Remove top banner ads
+    injectTeamOsCss();
+
+    // 1. Remove top banner / affiliate ads
     const bannerSels = [
       'a[id^="atLink-"]',
       'a[href*="clicks.pipaffiliates.com"]',
-      'a[href*="litebeach.com"]'
+      'a[href*="litebeach.com"]',
+      'a[href*="instrumenttactics"]',
+      'a[href*="highperformanceformat"]'
     ];
     for (const sel of bannerSels) {
       document.querySelectorAll(sel).forEach((el) => el.remove());
@@ -236,11 +308,48 @@
     const popunderSels = [
       'a[href*="sub3=invoke_layer"]',
       'a[href*="key=a1e8916f3df739635783bc00fa07bfe6"]',
+      'a[href*="key=ae333e82cfaead9ba22e64954c139352"]',
       'a[href*="/z3i66sdp?"]'
     ];
     for (const sel of popunderSels) {
       document.querySelectorAll(sel).forEach((el) => el.remove());
     }
+
+    // 3. Strip ad scripts / iframes injected by instrumenttactics etc.
+    document.querySelectorAll("script[src], iframe[src], img[src], link[href]").forEach((el) => {
+      const src = el.src || el.href || el.getAttribute("src") || el.getAttribute("href") || "";
+      if (teamOsUrlLooksLikeAd(src)) {
+        try { el.remove(); } catch (_) {}
+      }
+    });
+
+    // 4. Collapse empty ad containers left after blocked network requests
+    document.querySelectorAll("iframe, ins, div").forEach((el) => {
+      try {
+        const id = (el.id || "").toLowerCase();
+        const cls = (el.className && String(el.className)) || "";
+        if (
+          id.startsWith("container-") ||
+          id.includes("ad-container") ||
+          id.includes("google_ads") ||
+          /(?:^|\s)(?:ads?|adbox|ad-slot|banner-ad)(?:\s|$)/i.test(cls) ||
+          el.getAttribute("data-ad-client") ||
+          el.getAttribute("data-ad-slot")
+        ) {
+          // Only remove likely ad shells, not forum layout nodes
+          if (el.tagName === "IFRAME" || el.tagName === "INS" || id.startsWith("container-")) {
+            el.remove();
+          }
+        }
+      } catch (_) {}
+    });
+
+    // 5. Neutralize atOptions / document.write ad bootstrap if present
+    try {
+      if (typeof window.atOptions === "object") {
+        window.atOptions = { key: "", format: "iframe", height: 0, width: 0, params: {} };
+      }
+    } catch (_) {}
   };
 
   /* ====================================================================
@@ -307,10 +416,13 @@
   if (host.includes("reddit.com")) {
     injectRedditCss();
   }
+  if (host.includes("teamos.xyz")) {
+    injectTeamOsCss();
+  }
 
   removeAllAds();
 
-  const intervalMs = host.includes("reddit.com") ? 500 : 1000;
+  const intervalMs = host.includes("reddit.com") || host.includes("teamos.xyz") ? 500 : 1000;
   setInterval(removeAllAds, intervalMs);
 
   const startObserver = () => {

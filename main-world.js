@@ -88,7 +88,23 @@
     "zoologyfibre.com",
     "realizationnewestfangs.com",
     "spendsdetachment.com",
-    "kettledroopingcontinuation.com"
+    "kettledroopingcontinuation.com",
+    "instrumenttactics.com",
+    "highperformanceformat.com",
+    "highcpmgate.com",
+    "onclickads.net",
+    "onclicka.com",
+    "protrafficinspector.com",
+    "portalfluently.com",
+    "mamshirt.com",
+    "cloudvideosa.com",
+    "consumeririssalary.com",
+    "fizzyacerbitymellow.com",
+    "popads.net",
+    "adsterra.com",
+    "hilltopads.net",
+    "clickadu.com",
+    "propellerads.com"
   ];
 
   const blockedPatterns = [
