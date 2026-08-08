@@ -161,6 +161,28 @@
   injectAdHidingCSS();
   injectMainWorld();
 
+  /* ── Block ad-related media resources (banner images, Flash, iframes with ad paths) ── */
+  const adPathRegex = /(?:\/(?:ads?|banners?|advert|promo|sponsor|tracking|affiliate|click|pop(?:up|under))[\w.-]*\/)|(?:[\/?&_-](?:ad|ads|advert|banner|sponsor|promo|tracking|click|popup)[\w.-]*\.(?:gif|png|jpg|jpeg|webp|svg|swf|html?))/i;
+
+  const scrubAdMedia = () => {
+    document.querySelectorAll("img[src], embed[src], object[data], iframe[src]").forEach((el) => {
+      if (el.getAttribute("data-gsec-bait")) return;
+      if (el.getAttribute("data-gsec-hidden")) return;
+      const src = el.src || el.getAttribute("data") || "";
+      if (src && adPathRegex.test(src)) {
+        el.setAttribute("data-gsec-hidden", "1");
+        el.style.cssText = "display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;";
+      }
+    });
+    /* Also remove <object>/<embed> Flash elements (commonly tested by adblock-tester.com) */
+    document.querySelectorAll('object[type*="flash"], embed[type*="flash"], object[data*=".swf"], embed[src*=".swf"]').forEach((el) => {
+      if (!el.getAttribute("data-gsec-hidden")) {
+        el.setAttribute("data-gsec-hidden", "1");
+        el.style.cssText = "display:none!important;height:0!important;visibility:hidden!important;";
+      }
+    });
+  };
+
   /* ── Anti-adblock countermeasures ── */
   const defeatAntiAdblock = () => {
     // Create a fake ad element that anti-adblock scripts look for
@@ -207,6 +229,7 @@
   };
 
   scrubGenericAds();
+  scrubAdMedia();
 
   if (document.body) {
     defeatAntiAdblock();
@@ -214,8 +237,8 @@
     document.addEventListener("DOMContentLoaded", defeatAntiAdblock);
   }
 
-  setInterval(scrubGenericAds, 1500);
+  setInterval(function() { scrubGenericAds(); scrubAdMedia(); }, 1500);
 
-  const observer = new MutationObserver(scrubGenericAds);
+  const observer = new MutationObserver(function() { scrubGenericAds(); scrubAdMedia(); });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
