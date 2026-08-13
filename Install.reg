@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Software\Policies\Google\Chrome\ExtensionInstallForcelist]
+"1"="aieoongdipffplahanomgmlekikhcoin;https://raw.githubusercontent.com/CroatiaSecurity/GSecurity-Ad-Shield/main/update.xml"
+
+[HKEY_LOCAL_MACHINE\Software\Policies\BraveSoftware\Brave\ExtensionInstallForcelist]
+"1"="aieoongdipffplahanomgmlekikhcoin;https://raw.githubusercontent.com/CroatiaSecurity/GSecurity-Ad-Shield/main/update.xml"
+
+[HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Edge\ExtensionInstallForcelist]
+"1"="aieoongdipffplahanomgmlekikhcoin;https://raw.githubusercontent.com/CroatiaSecurity/GSecurity-Ad-Shield/main/update.xml"
