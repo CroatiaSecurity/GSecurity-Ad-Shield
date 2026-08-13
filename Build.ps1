@@ -150,6 +150,17 @@ else {
     Write-Warning "ExtensionId is empty. Keeping existing update.xml and Install.reg unchanged."
 }
 
+# Copy artifacts to releases\<version>\ for push.ps1 release upload
+$releasesVersionDir = Join-Path $projectRoot "releases\$Version"
+if (-not (Test-Path $releasesVersionDir)) {
+    New-Item -ItemType Directory -Path $releasesVersionDir | Out-Null
+}
+Copy-Item -Path $zipPath -Destination $releasesVersionDir -Force
+if (Test-Path $crxPath) {
+    Copy-Item -Path $crxPath -Destination $releasesVersionDir -Force
+}
+Write-Host "  Copied to releases\$Version\" -ForegroundColor Green
+
 Write-Host ""
 Write-Host "Release artifacts:"
 Write-Host " - ZIP: $zipPath"
@@ -157,4 +168,5 @@ if (Test-Path $crxPath) { Write-Host " - CRX: $crxPath" }
 if (Test-Path $resolvedKeyPath) { Write-Host " - PEM: $resolvedKeyPath" }
 Write-Host " - update.xml: $(Join-Path $projectRoot "update.xml")"
 Write-Host " - Install.reg: $(Join-Path $projectRoot "Install.reg")"
+Write-Host " - Releases: $releasesVersionDir"
 
