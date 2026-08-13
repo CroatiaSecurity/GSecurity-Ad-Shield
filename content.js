@@ -20,6 +20,11 @@
     const p = path();
     return p === "/watch" || p.startsWith("/watch");
   };
+  /* Forum / site embeds use /embed — keep player logic light and safe */
+  const isEmbedPage = () => {
+    const p = path();
+    return p === "/embed" || p.startsWith("/embed/") || p.startsWith("/embed?");
+  };
 
   const injectMainWorld = () => {
     try {
@@ -307,6 +312,11 @@
   };
 
   const tick = () => {
+    // Embeds (forums, blogs): only skip in-player ads; never reorganize DOM around the player
+    if (isEmbedPage()) {
+      scrubVideoAds();
+      return;
+    }
     // Home: kill black-hole tiles BEFORE scrub removes ad children
     if (isHomePage() && !isWatchPage()) reorganizeHomeAdTiles();
     scrubVideoAds();
@@ -314,7 +324,8 @@
   };
 
   injectMainWorld();
-  injectCollapseCss();
+  // Full UI collapse CSS is for youtube.com chrome, not minimal embed players
+  if (!isEmbedPage()) injectCollapseCss();
   tick();
-  setInterval(tick, 1000);
+  setInterval(tick, isEmbedPage() ? 1500 : 1000);
 })();

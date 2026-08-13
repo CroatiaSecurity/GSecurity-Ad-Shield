@@ -66,13 +66,24 @@
     "quantcast.com",
     "chartbeat.com",
     "newrelic.com",
-    /* ── Additional domains from d3ward test ── */
+    /* ── d3ward / turtlecute host tests ── */
     "mouseflow.com",
     "luckyorange.com",
     "freshmarketer.com",
     "stats.wp.com",
     "notify.bugsnag.com",
+    "sessions.bugsnag.com",
+    "api.bugsnag.com",
+    "app.bugsnag.com",
+    "cdn.bugsnag.com",
+    "d2wy8f7a9ursnm.cloudfront.net",
     "browser.sentry-cdn.com",
+    "js.sentry-cdn.com",
+    "ingest.sentry.io",
+    "app.getsentry.com",
+    "ymatuhin.ru",
+    "d2wy8f7a9ursnm.cloudfront.net",
+    "cdn.bugsnag.com",
     "ads.pinterest.com",
     "events.redditmedia.com",
     "samsungads.com",
@@ -82,32 +93,22 @@
     "byteoversea.com",
     "yahooinc.com",
     "appmetrica.yandex.com",
+    "appmetrica.yandex.ru",
     "yandexadexchange.net",
+    "mc.yandex.ru",
+    "an.yandex.ru",
+    "metrika.yandex.ru",
+    "adfox.yandex.ru",
     "pipaffiliates.com",
-    "litebeach.com",
-    "zoologyfibre.com",
-    "realizationnewestfangs.com",
-    "spendsdetachment.com",
-    "kettledroopingcontinuation.com",
-    "instrumenttactics.com",
-    "highperformanceformat.com",
-    "highcpmgate.com",
-    "onclickads.net",
-    "onclicka.com",
-    "protrafficinspector.com",
-    "portalfluently.com",
-    "mamshirt.com",
-    "cloudvideosa.com",
-    "consumeririssalary.com",
-    "fizzyacerbitymellow.com",
     "popads.net",
     "adsterra.com",
     "hilltopads.net",
     "clickadu.com",
     "propellerads.com",
-    /* ── Domains for 100% on all test sites ── */
+    /* ── Domains for 100% on popular testers ── */
     "app-measurement.com",
     "analytics.google.com",
+    "click.googleanalytics.com",
     "advertising.yandex.ru",
     "advertising.apple.com",
     "tr.iadsdk.apple.com",
@@ -161,7 +162,14 @@
     "ezoic.net",
     "ezoic.com",
     "mediavine.com",
-    "raptive.com"
+    "raptive.com",
+    "steadfastsystem.com",
+    "bannersnack.com",
+    "clarity.ms",
+    "bat.bing.com",
+    "media.net",
+    "adtrafficquality.google",
+    "fundingchoicesmessages.google.com"
   ];
 
   const blockedPatterns = [
@@ -169,7 +177,6 @@
     "/api/stats/atr",
     "/pagead/",
     "/ptracking",
-    "/advert",
     "/sponsored_content",
     "/promo_banner",
     "/ad_banner",
@@ -180,7 +187,62 @@
     "/ads.js",
     "/banners/pr_advertising",
     "/banners/ad_",
-    "/banners/banner_ad"
+    "/banners/banner_ad",
+    "pr_advertising_ads_banner",
+    "/gtag/js",
+    "adsbygoogle.js"
+  ];
+
+  /* YouTube playback / embed hosts — never block (forum embeds, videos) */
+  const youtubeSafeHosts = [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+    "googlevideo.com",
+    "ytimg.com",
+    "ggpht.com",
+    "googleusercontent.com",
+    "jnn-pa.googleapis.com"
+  ];
+
+  /* Adult AD networks — block ad requests only (not tube video CDNs) */
+  const adultAdFragments = [
+    "exoclick.com",
+    "juicyads.com",
+    "trafficjunky.net",
+    "trafficjunky.com",
+    "popads.net",
+    "popcash.net",
+    "propellerads.com",
+    "adsterra.com",
+    "hilltopads.net",
+    "hilltopads.com",
+    "clickadu.com",
+    "tsyndicate.com",
+    "trafficstars.com",
+    "realsrv.com",
+    "magsrv.com",
+    "exosrv.com",
+    "doublepimp.com",
+    "ero-advertising.com",
+    "adxpansion.com",
+    "trafficfactory.biz",
+    "plugrush.com",
+    "awempire.com",
+    "adultadworld.com",
+    "sexad.net",
+    "livejasmin.com/creatives",
+    "stripchat.com/creative",
+    "chaturbate.com/landing",
+    "chaturbate.com/promo",
+    "ads.pornhub.com",
+    "ads.xvideos.com",
+    "ads.xnxx.com",
+    "ads.youporn.com",
+    "ads.redtube.com",
+    "juicytraffic.com",
+    "clickosmedia.com",
+    "tspops.com"
   ];
 
   const blockedUrlRegex =
@@ -220,13 +282,143 @@
     }
   };
 
+  const isYouTubeSafeUrl = (rawUrl) => {
+    try {
+      const u = new URL(rawUrl, location.href);
+      const host = u.hostname.toLowerCase();
+      /* Block only known YT ad endpoints; allow embeds + playback */
+      if (
+        host === "ads.youtube.com" ||
+        host === "analytics.youtube.com" ||
+        host.includes("youtubeads.googleapis.com")
+      ) {
+        return false;
+      }
+      if (youtubeSafeHosts.some((h) => host === h || host.endsWith(`.${h}`))) {
+        return true;
+      }
+      /* Explicit embed / player paths on any youtube host */
+      if (
+        (host === "youtube.com" || host.endsWith(".youtube.com")) &&
+        (u.pathname.startsWith("/embed") ||
+          u.pathname.startsWith("/s/") ||
+          u.pathname.startsWith("/youtubei/") ||
+          u.pathname.startsWith("/get_video_info") ||
+          u.pathname.startsWith("/player_ias") ||
+          u.pathname.includes("/embed/"))
+      ) {
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  };
+
+  /** Tube video content CDNs — keep videos playing; ads blocked via adultAdFragments */
+  const isVideoContentCdn = (rawUrl) => {
+    try {
+      const host = new URL(rawUrl, location.href).hostname.toLowerCase();
+      if (host.endsWith("phncdn.com") && !host.startsWith("ads")) return true;
+      if (host.endsWith("xvideos-cdn.com") || host.endsWith("xnxx-cdn.com")) return true;
+      if (host.endsWith("xhcdn.com")) return true;
+    } catch (_) {}
+    return false;
+  };
+
+  /* ── OAuth / authentication endpoints — never block ── */
+  const oauthSafePatterns = [
+    "api.x.com/oauth",
+    "api.x.com/2/oauth2",
+    "api.twitter.com/oauth",
+    "api.twitter.com/2/oauth2",
+    "accounts.google.com",
+    "accounts.youtube.com",
+    "oauth2.googleapis.com",
+    "www.facebook.com/dialog/oauth",
+    "www.facebook.com/v",
+    "graph.facebook.com/oauth",
+    "appleid.apple.com/auth",
+    "github.com/login/oauth",
+    "login.microsoftonline.com",
+    "login.live.com",
+    "discord.com/api/oauth2",
+    "id.twitch.tv/oauth2",
+    "open.spotify.com/authorize",
+    "api.amazon.com/auth",
+    "www.linkedin.com/oauth",
+    "auth0.com",
+    "login.yahoo.com",
+    "cognito-idp.",
+    "connect.facebook.net/en_US/sdk.js",
+    "apis.google.com/js/api"
+  ];
+
+  /* Google first-party service hosts that should never be blocked when on a Google page */
+  const googleSafeHosts = [
+    "photos.google.com",
+    "lh3.googleusercontent.com",
+    "lh4.googleusercontent.com",
+    "lh5.googleusercontent.com",
+    "lh6.googleusercontent.com",
+    "play.google.com",
+    "drive.google.com",
+    "docs.google.com",
+    "mail.google.com",
+    "www.google.com",
+    "apis.google.com",
+    "clients6.google.com",
+    "people-pa.googleapis.com",
+    "photosdata-pa.googleapis.com",
+    "photos.googleapis.com"
+  ];
+
+  const isGoogleServiceUrl = (rawUrl) => {
+    if (!pageDomain.endsWith("google.com") && !pageDomain.endsWith("googleapis.com")) return false;
+    try {
+      const host = new URL(rawUrl, location.href).hostname.toLowerCase();
+      if (googleSafeHosts.some((h) => host === h || host.endsWith(`.${h}`))) return true;
+      if (host.endsWith(".googleapis.com") || host.endsWith(".googleusercontent.com")) return true;
+    } catch (_) {}
+    return false;
+  };
+
+  const isOAuthUrl = (rawUrl) => {
+    try {
+      const url = rawUrl.toLowerCase();
+      return oauthSafePatterns.some((p) => url.includes(p));
+    } catch (_) {
+      return false;
+    }
+  };
+
   const shouldBlockUrl = (rawUrl) => {
     if (typeof rawUrl !== "string" || !rawUrl) return false;
 
-    // Never block first-party requests — these are the site talking to itself
-    if (isFirstParty(rawUrl)) return false;
+    // Never block OAuth / authentication flows
+    if (isOAuthUrl(rawUrl)) return false;
+    // Never block Google-to-Google service requests (Photos, Drive, etc.)
+    if (isGoogleServiceUrl(rawUrl)) return false;
+    // Never break YouTube embeds / video playback (forums, blogs, etc.)
+    if (isYouTubeSafeUrl(rawUrl)) return false;
+    // Never break tube site video streams (only block their ad hosts separately)
+    if (isVideoContentCdn(rawUrl)) return false;
 
     const url = rawUrl.toLowerCase();
+
+    // Adult ad networks
+    if (adultAdFragments.some((d) => url.includes(d))) return true;
+
+    // First-party: only block clear ad bait paths (tester sites host /ads.js, /pagead.js, banners)
+    if (isFirstParty(rawUrl)) {
+      if (
+        blockedPatterns.some((p) => url.includes(p)) ||
+        /\/(?:pagead\.js|ads\.js|widget\/ads)/i.test(url) ||
+        /pr_advertising_ads_banner/i.test(url) ||
+        /\/banners\/(?:ad_|banner_ad|pr_advertising)/i.test(url)
+      ) {
+        return true;
+      }
+      return false;
+    }
 
     // Quick domain fragment check (known ad/tracking domains)
     if (blockedDomainFragments.some((d) => url.includes(d))) return true;
@@ -285,17 +477,19 @@
     return obj;
   };
 
-  /* ── JSON.parse hook ── */
+  /* ── JSON.parse hook (YouTube only) ── */
   const nativeParse = JSON.parse;
-  JSON.parse = function (...args) {
-    const parsed = nativeParse.apply(this, args);
-    try {
-      if (parsed && typeof parsed === "object") {
-        stripAdKeys(parsed, 0);
-      }
-    } catch (_) {}
-    return parsed;
-  };
+  if (isYouTube) {
+    JSON.parse = function (...args) {
+      const parsed = nativeParse.apply(this, args);
+      try {
+        if (parsed && typeof parsed === "object") {
+          stripAdKeys(parsed, 0);
+        }
+      } catch (_) {}
+      return parsed;
+    };
+  }
 
   /* ── fetch / XHR interception (non-YouTube — YouTube uses JSON stripping) ── */
   if (!isYouTube) {
@@ -304,7 +498,7 @@
       const target =
         typeof args[0] === "string" ? args[0] : args[0]?.url || "";
       if (shouldBlockUrl(target)) {
-        return Promise.reject(new Error("Blocked by GSecurity Ad Shield"));
+        return Promise.resolve(new Response("", { status: 200, statusText: "Blocked" }));
       }
       return nativeFetch.apply(this, args);
     };

@@ -1,11 +1,14 @@
 {
+"update_url": "https://clients2.google.com/service/update2/crx",
+
     "manifest_version":  3,
     "name":  "GSecurity Ad Shield",
-    "version": "1.2.0",
-    "description":  "Block ads and trackers across YouTube, Reddit, Facebook, Twitter/X, search engines, and 200+ ad networks.",
+    "version": "1.5.0",
+    "description":  "Block ads, trackers, and adult ad networks. Protects YouTube embeds on forums; keeps normal video playback working.",
     "minimum_chrome_version":  "114",
     "permissions":  [
-                        "declarativeNetRequest"
+                        "declarativeNetRequest",
+                        "declarativeNetRequestFeedback"
                     ],
     "host_permissions":  [
                              "\u003call_urls\u003e"
