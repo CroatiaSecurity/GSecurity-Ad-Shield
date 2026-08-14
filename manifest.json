@@ -1,7 +1,7 @@
 {
     "manifest_version":  3,
     "name":  "GSecurity Ad Shield",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description":  "Block ads, trackers, and adult ad networks. Protects YouTube embeds on forums; keeps normal video playback working.",
     "minimum_chrome_version":  "114",
     "permissions":  [
